@@ -1,8 +1,8 @@
-import dotenv from 'dotenv';
-import express from 'express';
-import { createHandler } from 'graphql-http/lib/use/express';
-import { buildSchema } from 'graphql';
-import { ruruHTML } from 'ruru/server';
+import dotenv from "dotenv";
+import express from "express";
+import { createHandler } from "graphql-http/lib/use/express";
+import { buildSchema } from "graphql";
+import { ruruHTML } from "ruru/server";
 
 // Setup .env
 dotenv.config();
@@ -15,105 +15,117 @@ const app = express();
 
 const users = [
   {
-    id: '1',
-    username: 'John',
-    email: 'john@example.com',
-    password: 'password1',
+    id: "1",
+    username: "John",
+    email: "john@example.com",
+    password: "password1",
     points: 100,
-    challengesCompleted: ['1', '2'],
+    challengesCompleted: ["1", "2", "3"],
   },
   {
-    id: '2',
-    username: 'Jane',
-    email: 'jane@example.com',
-    password: 'password2',
+    id: "2",
+    username: "Jane",
+    email: "jane@example.com",
+    password: "password2",
     points: 75,
-    challengesCompleted: ['2'],
+    challengesCompleted: ["2"],
   },
   {
-    id: '3',
-    username: 'Alice',
-    email: 'alice@example.com',
-    password: 'password3',
+    id: "3",
+    username: "Alice",
+    email: "alice@example.com",
+    password: "password3",
     points: 150,
-    challengesCompleted: ['1', '3'],
+    challengesCompleted: ["1", "3"],
   },
 ];
 
 const challenges = [
   {
-    id: '1',
-    name: 'Workout Challenge',
-    startDate: '2024-01-01',
-    endDate: '2024-01-21',
-    progress: ['1', '2', '3'],
-    creator: '1',
+    id: "1",
+    name: "Workout Challenge",
+    startDate: "2024-01-01",
+    endDate: "2024-01-21",
+    progress: ["1", "2", "3"],
+    creator: "1",
   },
   {
-    id: '2',
-    name: 'Reading Challenge',
-    startDate: '2024-02-01',
-    endDate: '2024-02-21',
-    progress: ['4', '5'],
-    creator: '2',
+    id: "2",
+    name: "Reading Challenge",
+    startDate: "2024-02-01",
+    endDate: "2024-02-21",
+    progress: ["4", "5"],
+    creator: "2",
   },
   {
-    id: '3',
-    name: 'Meditation Challenge',
-    startDate: '2024-03-01',
-    endDate: '2024-03-21',
-    progress: ['6'],
-    creator: '3',
+    id: "3",
+    name: "Meditation Challenge",
+    startDate: "2024-03-01",
+    endDate: "2024-03-21",
+    progress: ["6"],
+    creator: "3",
   },
 ];
 
 const progress = [
   {
-    id: '1',
-    date: '2024-01-01',
+    id: "1",
+    date: "2024-01-01",
     completed: true,
-    notes: 'Completed workout session',
-    challenge: '1',
+    notes: "Completed workout session",
+    challenge: "1",
   },
   {
-    id: '2',
-    date: '2024-01-02',
+    id: "2",
+    date: "2024-01-02",
     completed: true,
-    notes: 'Ran 5 miles',
-    challenge: '1',
+    notes: "Ran 5 miles",
+    challenge: "1",
   },
   {
-    id: '3',
-    date: '2024-01-03',
+    id: "3",
+    date: "2024-01-03",
     completed: false,
-    notes: 'Skipped workout',
-    challenge: '1',
+    notes: "Skipped workout",
+    challenge: "1",
   },
   {
-    id: '4',
-    date: '2024-02-01',
+    id: "4",
+    date: "2024-02-01",
     completed: true,
-    notes: 'Read 50 pages',
-    challenge: '2',
+    notes: "Read 50 pages",
+    challenge: "2",
   },
   {
-    id: '5',
-    date: '2024-02-02',
+    id: "5",
+    date: "2024-02-02",
     completed: true,
-    notes: 'Read 30 pages',
-    challenge: '2',
+    notes: "Read 30 pages",
+    challenge: "2",
   },
   {
-    id: '6',
-    date: '2024-03-01',
+    id: "6",
+    date: "2024-03-01",
     completed: true,
-    notes: 'Meditated for 30 minutes',
-    challenge: '3',
+    notes: "Meditated for 30 minutes",
+    challenge: "3",
   },
 ];
+
 var getUser = function (args) {
   const userID = args.id;
-  return users.filter((user) => user.id == userID)[0];
+  const data = users.filter((user) => user.id == userID)[0];
+  data["challengesCompleted"] = data["challengesCompleted"].map(
+    (challengeId) => {
+      const index = challenges.findIndex(
+        (challenge) => challenge.id === challengeId,
+      );
+      if (index > -1) {
+        return challenges[index];
+      }
+    },
+  );
+  return data;
 };
 
 // Return a list of users
@@ -170,30 +182,30 @@ const schema = buildSchema(`
 
 const root = {
   hello: () => {
-    return 'Hidden secret message';
+    return "Hidden secret message";
   },
   getUser: getUser,
 };
 
 app.all(
-  '/graphql',
+  "/graphql",
   createHandler({
     schema: schema,
     rootValue: root,
     graphiql: true, // Enable GraphiQL when server endpoint is accessed in browser
-  })
+  }),
 );
 
 // app.get('/', (_, res) => {
 //   res.json({ msg: 'Stealth startup nodemon' });
 // });
 
-app.get('/', (_, res) => {
-  res.type('html');
+app.get("/", (_, res) => {
+  res.type("html");
   res.end(
     ruruHTML({
-      endpoint: '/graphql',
-    })
+      endpoint: "/graphql",
+    }),
   );
 });
 
@@ -202,7 +214,7 @@ app.get('/', (_, res) => {
 // });
 
 app.listen(PORT, () => {
-  console.log('Listening on http://localhost:8080');
+  console.log("Listening on http://localhost:8080");
 });
 
 // console.log('Running a GraphQL API server at http://localhost:4000/graphql');
