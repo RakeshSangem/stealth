@@ -1,0 +1,46 @@
+type User {
+  id: ID!
+  username: String!
+  email: String!
+  password: String!
+  points: Int!
+  challengesCompleted: [Challenge!]!
+}
+
+type Challenge {
+  id: ID!
+  name: String!
+  startDate: String!
+  endDate: String!
+  progress: [Progress!]!
+  creator: User!
+}
+
+type Progress {
+  id: ID!
+  date: String!
+  completed: Boolean!
+  notes: String
+  challenge: Challenge!
+}
+
+type Query {
+  getUser(id: ID!): User
+  getChallenge(id: ID!): Challenge
+}
+
+type Mutation {
+  createUser(username: String!, email: String!, password: String!): User!
+  createChallenge(
+    name: String!
+    startDate: String!
+    endDate: String!
+    creatorId: ID!
+  ): Challenge!
+  createProgress(
+    challengeId: ID!
+    date: String!
+    completed: Boolean!
+    notes: String
+  ): Progress!
+}
