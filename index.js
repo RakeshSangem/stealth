@@ -16,7 +16,7 @@ const app = express();
 
 // Get Schema from schema.graphql
 const typeDefs = gql(
-  readFileSync("./schema/schema.graphql", { encoding: "utf-8" }),
+  readFileSync("./schema/schema.graphql", { encoding: "utf-8" })
 );
 
 const server = new ApolloServer({
