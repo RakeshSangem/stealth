@@ -1,33 +1,45 @@
-import { challenges, progress, users } from "../db/db.js";
+import { query } from "../db/db.js";
 
 const getUser = function (_, args) {
-  const userID = args.id;
-  const data = users.filter((user) => user.id == userID)[0];
-  data["challengesCompleted"] = data["challengesCompleted"].map(
-    (challengeId) => {
-      const index = challenges.findIndex(
-        (challenge) => challenge.id === challengeId
-      );
-      if (index > -1) {
-        return challenges[index];
-      }
-    }
-  );
-  return data;
+  return new Promise((resolve, reject) => {
+    const userID = args.id;
+    const queryString = "SELECT * FROM users";
+
+    query({
+      queryString,
+      callback: (err, res) => {
+        if (err) {
+          console.error(`Error executing query ${queryString} :`, err.stack);
+          reject(err);
+        } else {
+          const data = res.rows.filter((user) => user.id == userID)[0];
+          resolve(data);
+        }
+      },
+    });
+  });
 };
 
 // createUser mutation
 const createUser = function (_, args) {
-  const newUser = {
-    username: args.username,
-    id: users.length + 1,
-    email: args.email,
-    password: args.password,
-    challengesCompleted: [],
-  };
-
-  users.push(newUser);
-  return newUser;
+  return new Promise((resolve, reject) => {
+    const queryString = `INSERT INTO users (username, email, password) VALUES ('${args.username}', '${args.email}', '${args.password}');`;
+    query({
+      queryString,
+      callback: (err, res) => {
+        if (err) {
+          console.error(`Error executing query ${queryString} :`, err.stack);
+          reject(err.stack);
+        } else {
+          resolve({
+            username: args.username,
+            email: args.email,
+            password: args.password,
+          });
+        }
+      },
+    });
+  });
 };
 
 // resolvers

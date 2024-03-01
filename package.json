@@ -17,6 +17,7 @@
     "graphql": "^16.8.1",
     "graphql-http": "^1.22.0",
     "graphql-tag": "^2.12.6",
+    "pg": "^8.11.3",
     "ruru": "^2.0.0-beta.11"
   },
   "devDependencies": {
